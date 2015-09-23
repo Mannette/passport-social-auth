@@ -6,16 +6,18 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var swig = require('swig');
-
+var passport = require('passport');
+var session = require('express-session');
+var mongoose = require('mongoose');
 
 // *** routes *** //
 var routes = require('./routes/index.js');
 
-
 // *** express instance *** //
 var app = express();
 
-
+// *** mongoose *** //
+mongoose.connect('mongodb://localhost/passport-social-auth');
 // *** view engine *** //
 var swig = new swig.Swig();
 app.engine('html', swig.renderFile);
@@ -32,6 +34,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../client/public')));
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // *** main routes *** //
